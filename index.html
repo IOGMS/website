@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IOGMS System</title>
+
+<style>
+body{
+    font-family:Arial;
+    margin:0;
+    background:#f4f6f9;
+}
+
+/* LOGIN */
+#loginPage{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.login-box{
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    width:300px;
+    text-align:center;
+}
+.login-box input{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+}
+.login-box {
+  width: 350px;
+  padding: 35px;
+  border-radius: 18px;
+
+  background: linear-gradient(135deg, #1e88e5, #0f4c81);
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+
+  color: white;
+}
+
+/* TOP BAR */
+.topbar{
+    margin-left:240px;
+    background:white;
+    padding:15px 20px;
+    font-weight:bold;
+    border-bottom:1px solid #ddd;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:240px;
+    background:#1e4fa3;
+    color:white;
+    position:fixed;
+    height:100%;
+}
+.sidebar h2{
+    padding:15px;
+    margin:0;
+}
+.sidebar a{
+    display:block;
+    color:white;
+    padding:12px;
+    text-decoration:none;
+    cursor:pointer;
+}
+.sidebar a:hover{
+    background:#163d7a;
+}
+
+/* MAIN */
+.main{
+    margin-left:240px;
+    padding:20px;
+}
+
+/* CARDS */
+.cards{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+}
+.card{
+    flex:1;
+    min-width:250px;
+    padding:20px;
+    color:white;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.3s;
+}
+.card:hover{
+    transform:scale(1.05);
+}
+
+.blue{background:#3b82f6;}
+.orange{background:#f59e0b;}
+.green{background:#10b981;}
+
+.hidden{display:none}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+th,td{
+    padding:8px;
+    border-bottom:1px solid #ccc;
+    font-size:13px;
+}
+
+button{
+    padding:5px 8px;
+    margin:2px;
+    cursor:pointer;
+}
+
+/* STATUS COLORS */
+.status-blue{color:#3b82f6;font-weight:bold;}
+.status-orange{color:#f59e0b;font-weight:bold;}
+.status-green{color:#10b981;font-weight:bold;}
+
+/* GREEN MANAGE BUTTON */
+.manage-btn{
+    background:#10b981;
+    color:white;
+    border:none;
+    border-radius:5px;
+}
+
+/* NEW */
+.section-box{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    margin-top:20px;
+}
+
+/* VERTICAL GRAPH */
+.bar-container{
+    display:flex;
+    align-items:flex-end;
+    gap:20px;
+    height:100px;
+}
+.vbar{
+    width:100px;
+    text-align:center;
+    color:white;
+    border-radius:5px 5px 0 0;
+}
+
+/* COLORS */
+.yellow{background:#facc15;}
+.bluebar{background:#3b82f6;}
+.greenbar{background:#10b981;}
+
+.modal{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+.modal-content{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    width:300px;
+}
+</style>
+  
+<style>
+#reports{
+    font-family: Arial;
+    padding:20px;
+}
+
+#reports h2, #reports h3{
+    margin-bottom:10px;
+}
+
+#reports table{
+    border-collapse:collapse;
+    width:100%;
+    margin-bottom:15px;
+}
+
+#reports td, #reports th{
+    border:1px solid #ccc;
+    padding:15px;
+    text-align:center;
+}
+
+/* Boxes (top cards) */
+#reports td{
+    vertical-align:top;
+}
+
+/* Colors */
+.blue{background:#3498db; color:white;}
+.green{background:#2ecc71; color:white;}
+.yellow{background:#f1c40f; color:black;}
+
+/* Buttons */
+button{
+    padding:8px 15px;
+    border:none;
+    cursor:pointer;
+}
+
+.btn-blue{background:#3498db; color:white;}
+.btn-green{background:#2ecc71; color:white;}
+.btn-yellow{background:#f1c40f; color:black;}
+.form-group input,
+.form-group textarea{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border-radius:5px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+}
+
+.form-group textarea{
+    height:100px;
+    resize:none;
+}
+  .form-group input,
+.form-group textarea{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border-radius:5px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+    display:block; /* 🔥 important */
+}
+
+.form-group textarea{
+    height:45px; /* 🔥 para same height sa input */
+    resize:none;
+}
+</style>
+  
+</head>
+
+<body>
+
+<div id="loginPage">
+    <div class="login-box">
+        <h2>IOGMS</h2>
+
+        <input type="email" id="email" placeholder="Enter Gmail">
+        <input type="password" id="password" placeholder="Enter Password">
+
+        <!-- ROLE SELECT -->
+        <div style="margin-bottom: 15px;">
+            <select id="role">
+                <option value="">Choose Role</option>
+                <option value="Student">Student</option>
+                <option value="Faculty">Faculty</option>
+                <option value="Guidance">Guidance</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+
+        <!-- LOGIN BUTTON -->
+        <button onclick="login()">Log In</button>
+        <p id="error" style="color:red;"></p>
+
+    </div>
+</div>
+
+<div id="system" class="hidden">
+<div class="sidebar">
+    <h2>IOGMS</h2>
+    <a onclick="showPage('dashboard')">Dashboard</a>
+    <a onclick="showPage('appointments')">Appointments</a>
+    <a onclick="showPage('referrals')">Referrals</a>
+    <a onclick="showPage('cases')">Case Records</a>
+    <a onclick="showPage('reports')">Reports</a>
+    <a onclick="showPage('settings')">Settings</a>
+</div>
+
+<div class="topbar">
+Integrated Online Guidance Management System |
+<small>College of Management and Business Technology CMBT</small>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+<div class="cards">
+    <div class="card blue" onclick="openModal(['1.Andrea Tolentino'])">
+        📅 <b>Upcoming Appointment</b><br><br>
+        Counseling Session<br>
+        April 25, 2026, 10:00 AM
+    </div>
+
+    <div class="card orange" onclick="openModal(['1.Rachel Reyes','2.Ace Cruz'])">
+        📁 <b>Pending Referrals</b>
+        <h2>2</h2>
+    </div>
+
+    <div class="card green" onclick="openModal(['1.Bryan Bagunas','2.Jessica Galanza','3.Mark Lee'])">
+        📊 <b>Active Cases</b>
+        <h2>3</h2>
+    </div>
+</div>
+
+<h3>Recent Updates</h3>
+<ul>
+<li>New Guidance Session Scheduled</li>
+<li>Referral from Prof. Cruz</li>
+</ul>
+
+<button onclick="showPage('appointments')">Book Appointment</button>
+<button onclick="showPage('referrals')">Submit Referral</button>
+<button onclick="showPage('cases')">View Case Records</button>
+
+</div>
+
+<!-- APPOINTMENTS -->
+<div id="appointments" class="hidden">
+<h2>Appointment Requests</h2>
+
+<div class="section-box">
+<h3>Book Appointment</h3>
+
+<form id="appointmentForm">
+    <input type="text" id="appName" placeholder="Full Name" required>
+  <input type="email" id="appEmail" placeholder="Email" required>
+
+    <select id="appService" required>
+        <option value="">Select Concern</option>
+        <option>Academic</option>
+        <option>Behavioral</option>
+        <option>Emotional</option>
+        <option>Career</option>
+        <option>Personal</option>
+    </select>
+
+    <input type="date" id="appDate" required>
+    <input type="time" id="appTime" required>
+
+    <button type="submit">Book Appointment</button>
+</form>
+
+<p id="appMessage"></p>
+</div>
+
+<table>
+<tr>
+<th>Student</th>
+<th>Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+<tr>
+<td>Michaela Belen</td>
+<td>April 25, 2026</td>
+<td><span class="status-blue">New</span></td>
+<td><button class="manage-btn" onclick="manageItem('Michaela Belen')">Manage</button></td>
+</tr>
+<tr>
+<td>Samantha Cantada</td>
+<td>April 25, 2026</td>
+<td><span class="status-blue">New</span></td>
+<td><button class="manage-btn" onclick="manageItem('Samantha Cantada')">Manage</button></td>
+</tr>
+<tr>
+<td>Michelle Panillio</td>
+<td>May 15, 2026</td>
+<td><span class="status-green">Reschedule</span></td>
+<td><button class="manage-btn" onclick="manageItem('Michelle Panillio')">Manage</button></td>
+</tr>
+<tr>
+<td>Jude Garcia</td>
+<td>April 22, 2026</td>
+<td><span class="status-orange">Meeting</span></td>
+<td><button class="manage-btn" onclick="manageItem('Jude Garcia')">Manage</button></td>
+</tr>
+</table>
+
+</div>
+
+<!-- REFERRALS -->
+<div id="referrals" class="hidden">
+<h2>Faculty Referrals</h2>
+<h3>Submit Referral</h3>
+<div class="form-group">
+    <input type="text" id="refStudent" placeholder="Student Name">
+</div>
+
+<div class="form-group">
+    <textarea id="refNote" placeholder="Observation"></textarea>
+</div>
+<button onclick="addReferral()">Submit</button>
+<table>
+<tr>
+<th>Student</th>
+<th>Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+<tr>
+<td>Carlene Ocampo</td>
+<td>April 20, 2026</td>
+<td><span class="status-blue">Reviewed</span></td>
+<td><button class="manage-btn" onclick="manageItem('Carlene Ocampo')">Manage</button></td>
+</tr>
+<tr>
+<td>Princess Cabildo</td>
+<td>April 27, 2026</td>
+<td><span class="status-orange">Scheduled</span></td>
+<td><button class="manage-btn" onclick="manageItem('Princess Cabildo')">Manage</button></td>
+</tr>
+<tr>
+<td>Laila Cruz</td>
+<td>April 20, 2026</td>
+<td><span class="status-green">Managed</span></td>
+<td><button class="manage-btn" onclick="manageItem('Laila Cruz')">Manage</button></td>
+</tr>
+</table>
+
+</div>
+
+<!-- CASE RECORDS -->
+<div id="cases" class="hidden">
+<h2>Case Records</h2>
+
+  <h3>Student Counseling Notes</h3>
+<div class="form-group">
+    <input type="text" id="caseName" placeholder="Student Name">
+</div>
+
+<div class="form-group">
+    <textarea id="caseNote" placeholder="Session Notes"></textarea>
+</div>
+<button onclick="addCase()">Save</button>
+<div class="section-box">
+
+  <h3>Case Summary</h3>
+<div class="cards">
+<div class="card blue" onclick="openModal([
+'1.Daniel Santos','2.Miguel Ramos','3.Carlo Mendoza','4.Luis Navarro','5.Kevin Torres',
+'6.Adrian Cruz','7.Joshua Villanueva','8.Mark Delgado','9.Ethan Garcia','10.Noel Bautista'
+])">New Cases</div>
+
+<div class="card orange" onclick="openModal([
+'1.Rafael Lim','2.Paolo Herrera','3.Brian Castillo','4.Jose Aquino','5.Victor Salazar'
+])">Closed Cases</div>
+
+<div class="card green" onclick="openModal([
+'1.Anthony Reyes','2.Patrick Gomez','3.Jason Flores','4.Christian Vega','5.Aaron Ortiz',
+'6.Kyle Fernandez','7.Dennis Ponce','8.Gabriel Dominguez','9.Ryan Chavez','10.Leo Mercado'
+])">Follow-Up Cases</div>
+</div>
+</div>
+
+<div class="section-box">
+<h3>Guidance Cases by Type</h3>
+<div class="bar-container">
+<div class="vbar orange" style="height:100%">Academic<br>35%</div>
+<div class="vbar bluebar" style="height:40%">Behavioral<br>5%</div>
+<div class="vbar greenbar" style="height:80%">Emotional<br>25%</div>
+<div class="vbar orange" style="height:60%">Carrer<br>15%</div>
+<div class="vbar bluebar" style="height:70%">Personal<br>20%</div>
+</div>
+</div>
+
+<div class="section-box">
+<h3>Upcoming Appointments</h3>
+<p onclick="openModal(['Angel Canino'])">Counseling – 10:00 AM - Angel Canino</p>
+<p onclick="openModal(['John Cruz'])">Follow-Up – 2:00 PM - John Cruz</p>
+</div>
+
+<div class="section-box" style="border: 1px solid #ccc; padding: 18px; border-radius: 8px; width: 100%; max-width: 420px; font-family: Arial, sans-serif; background-color: #fff;">
+
+    <!-- HEADER PROFILE -->
+    <div style="display: flex; align-items: center; gap: 12px;">
+
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" 
+             alt="Student Photo"
+             style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #aaa; border-radius: 4px;">
+
+        <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: bold;">
+                Faye Sagaysay
+            </h3>
+            <p style="margin: 3px 0; font-size: 13px; color: #555;">
+                ID: 2026-0456
+            </p>
+            <p style="margin: 0; font-size: 13px; color: #555;">
+                BSBA | 3rd Year
+            </p>
+        </div>
+
+    </div>
+
+    <hr style="margin: 12px 0;">
+
+    <!-- TABLE -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+
+        <tr style="border-bottom: 1px solid #ddd;">
+            <th style="text-align:left; padding: 6px;">Date</th>
+            <th style="text-align:left; padding: 6px;">Type</th>
+            <th style="text-align:center; padding: 6px;">Action</th>
+        </tr>
+
+        <tr>
+            <td style="padding: 6px;">April 20</td>
+            <td>Counseling</td>
+            <td style="text-align:center;">
+                <button style="background-color:#2e7d32; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">
+                    Manage
+                </button>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 6px;">April 10</td>
+            <td>Follow-Up</td>
+            <td style="text-align:center;">
+                <button style="background-color:#2e7d32; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">
+                    Manage
+                </button>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 6px;">March 28</td>
+            <td>Consultation</td>
+            <td style="text-align:center;">
+                <button style="background-color:#2e7d32; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">
+                    Manage
+                </button>
+            </td>
+        </tr>
+
+    </table>
+
+</div>
+</div>
+
+<!-- REPORTS -->
+<div id="reports">
+
+<h2>Reports</h2>
+<hr>
+
+<table>
+<tr>
+<td class="blue">
+<h4>Total Sessions</h4>
+<h2>120</h2>
+<a href="#" style="color:white;">View Details</a>
+</td>
+
+<td class="green">
+<h4>Most Common Case</h4>
+<h2>Academic</h2>
+<a href="#" style="color:white;">View Analysis</a>
+</td>
+
+<td class="yellow">
+<h4>Monthly Trends</h4>
+<h2>April ↑</h2>
+<a href="#" style="color:black;">View Chart</a>
+</td>
+
+<td class="green">
+<h4>Satisfaction Rate</h4>
+<h2>92%</h2>
+<a href="#" style="color:white;">View Feedback</a>
+</td>
+</tr>
+</table>
+
+<h3>Generate Reports</h3>
+
+<table>
+<tr>
+<th>Report Type</th>
+<th>Action</th>
+</tr>
+
+<tr>
+<td>Session Report</td>
+<td><button class="btn-blue">Download</button></td>
+</tr>
+
+<tr>
+<td>Case Summary Report</td>
+<td><button class="btn-green">Download</button></td>
+</tr>
+
+<tr>
+<td>Referral Report</td>
+<td><button class="btn-yellow">Download</button></td>
+</tr>
+
+</table>
+
+</div>
+  
+<!-- SETTINGS -->
+<div id="settings" class="hidden">
+<h2>⚙️ System Settings</h2>
+<div class="settings-box">
+<h3>👤 Account Settings</h3>
+<button>Edit Profile</button> <button>Change Password</button></div>
+<div class="settings-box">
+<h3>📅 Appointment Settings</h3>
+<button>Set Available Schedule</button> <button>Auto-Approve Appointments</button></div>
+<div class="settings-box">
+<h3>🔔 Notification Settings</h3>
+<button>Enable Email Notifications</button> <button>Enable SMS Alerts</button></div>
+<div class="settings-box">
+<h3>🎨 System Preferences</h3>
+<button>Dark Mode</button> <button>Language Settings</button></div>
+<div class="settings-box">
+<h3>🛡️ Security</h3>
+<button>Backup Data</button> <button onclick="logout()">Logout</button></div>
+</div>
+</div>
+
+<div id="modal" class="modal" onclick="closeModal()">
+<div class="modal-content" id="modalContent"></div>
+</div>
+
+<script>
+let currentRole = "";
+
+let db = {
+    appointments: JSON.parse(localStorage.getItem("appointments")) || [],
+    referrals: JSON.parse(localStorage.getItem("referrals")) || [],
+    cases: JSON.parse(localStorage.getItem("cases")) || []
+};
+function login(){
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+
+    if(email.endsWith("@gmail.com") && password !== ""){
+        currentRole = document.getElementById("role").value;
+
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("system").classList.remove("hidden");
+
+        applyAccess(); // 🔥 ADD
+    }else{
+        document.getElementById("error").innerText = "Gmail only + password required!";
+    }
+}
+  
+function logout(){
+    document.getElementById("system").classList.add("hidden");
+    document.getElementById("loginPage").style.display = "flex";
+}
+
+function showPage(page){
+    document.querySelectorAll('.main > div').forEach(div=>div.classList.add('hidden'));
+    document.getElementById(page).classList.remove('hidden');
+}
+
+function openModal(data){
+    let content="";
+    data.forEach(name=> content += "<p>"+name+"</p>");
+    document.getElementById("modalContent").innerHTML = content;
+    document.getElementById("modal").style.display="flex";
+}
+function closeModal(){
+    document.getElementById("modal").style.display="none";
+}
+
+function manageItem(name){
+    alert("Managing record for: " + name);
+}
+// LOAD saved appointments
+function loadAppointments(){
+    let data = JSON.parse(localStorage.getItem("appointments")) || [];
+    let table = document.querySelector("#appointments table");
+
+    // remove old dynamic rows
+    table.querySelectorAll(".dynamic").forEach(e => e.remove());
+
+    data.forEach((app, index) => {
+        let row = `
+<tr class="dynamic">
+    <td>${app.name}</td>
+    <td>${app.date}</td>
+   <td><span class="status-blue">${app.status}</span></td>
+    <td>
+        <button class="manage-btn" onclick="manageItem('${app.name}')">Manage</button>
+        <button onclick="updateStatus(${index})">Next</button>
+        <button onclick="deleteAppointment(${index})" style="background:red;color:white;border:none;border-radius:5px;">Delete</button>
+    </td>
+</tr>`;
+        table.innerHTML += row;
+    });
+}
+// DELETE FUNCTION
+function deleteAppointment(index){
+    let data = JSON.parse(localStorage.getItem("appointments")) || [];
+
+    if(confirm("Delete this appointment?")){
+        data.splice(index, 1);
+        localStorage.setItem("appointments", JSON.stringify(data));
+        loadAppointments();
+    }
+}
+
+// LOAD + SAVE
+window.addEventListener("load", function(){
+
+    loadAppointments();
+
+    document.getElementById("appointmentForm").addEventListener("submit", function(e){
+        e.preventDefault();
+
+        let appointment = {
+    name: document.getElementById("appName").value,
+    email: document.getElementById("appEmail").value,
+    service: document.getElementById("appService").value,
+    date: document.getElementById("appDate").value,
+    time: document.getElementById("appTime").value,
+    status: "Pending" // 🔥 ADD
+};
+
+        let data = JSON.parse(localStorage.getItem("appointments")) || [];
+        data.push(appointment);
+        localStorage.setItem("appointments", JSON.stringify(data));
+
+        document.getElementById("appMessage").innerText =
+            "Appointment booked for " + appointment.name;
+
+        document.getElementById("appointmentForm").reset();
+
+        loadAppointments();
+    });
+});
+  function applyAccess(){
+    
+    // tanggalin lahat ng hidden muna
+    document.querySelectorAll('.main > div').forEach(div=>{
+        div.classList.add('hidden');
+    });
+
+    // dashboard always visible first
+    document.getElementById("dashboard").classList.remove("hidden");
+
+    // role-based access (ALLOW lang, hindi force hide)
+    if(currentRole === "Student"){
+        // Student can access appointments
+    }
+
+    if(currentRole === "Faculty"){
+        // Faculty can access referrals
+    }
+
+    if(currentRole === "Guidance"){
+        // Guidance can access all
+    }
+
+    if(currentRole === "Admin"){
+        // Admin settings only
+    }
+}
+  function updateStatus(index){
+    let data = JSON.parse(localStorage.getItem("appointments")) || [];
+
+    let flow = ["Pending","Approved","Completed","Closed"];
+    let current = flow.indexOf(data[index].status);
+
+    if(current < flow.length - 1){
+        data[index].status = flow[current + 1];
+    }
+
+    localStorage.setItem("appointments", JSON.stringify(data));
+    loadAppointments();
+}
+  function addReferral(){
+    let referral = {
+        name: document.getElementById("refStudent").value,
+        note: document.getElementById("refNote").value,
+        status: "Submitted"
+    };
+
+    let data = JSON.parse(localStorage.getItem("referrals")) || [];
+    data.push(referral);
+
+    localStorage.setItem("referrals", JSON.stringify(data));
+
+    alert("Referral submitted");
+}
+ function addCase(){
+    let name = document.getElementById("caseName").value;
+    let note = document.getElementById("caseNote").value;
+
+    // VALIDATION
+    if(name === "" || note === ""){
+        alert("Please fill all fields!");
+        return;
+    }
+
+    let caseData = {
+        name: name,
+        note: note
+    };
+
+    let data = JSON.parse(localStorage.getItem("cases")) || [];
+    data.push(caseData);
+
+    localStorage.setItem("cases", JSON.stringify(data));
+
+    alert("Case saved");
+
+    // CLEAR INPUTS
+    document.getElementById("caseName").value = "";
+    document.getElementById("caseNote").value = "";
+}
+function addReferral(){
+    let name = document.getElementById("refStudent").value;
+    let note = document.getElementById("refNote").value;
+
+    if(name === "" || note === ""){
+        alert("Please fill all fields!");
+        return;
+    }
+
+    let referral = {
+        name: name,
+        note: note,
+        status: "Submitted"
+    };
+
+    let data = JSON.parse(localStorage.getItem("referrals")) || [];
+    data.push(referral);
+
+    localStorage.setItem("referrals", JSON.stringify(data));
+
+    alert("Referral submitted");
+
+    document.getElementById("refStudent").value = "";
+    document.getElementById("refNote").value = "";
+}
+</script>
+
+</body>
+</html>
