@@ -261,6 +261,40 @@ button{
     height:45px; /* 🔥 para same height sa input */
     resize:none;
 }
+  .row-top{
+    display:flex;
+    gap:15px;
+    margin-bottom:15px;
+}
+
+/* equal small boxes */
+.small{
+    flex:1;
+}
+
+/* inputs uniform */
+.form-group label{
+    display:block;
+    font-size:13px;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+.form-group input,
+.form-group textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    box-sizing:border-box;
+}
+
+/* big fields */
+textarea{
+    height:100px;
+    resize:none;
+}
+  
 </style>
   
 </head>
@@ -295,12 +329,12 @@ button{
 <div id="system" class="hidden">
 <div class="sidebar">
     <h2>IOGMS</h2>
-    <a onclick="showPage('dashboard')">Dashboard</a>
-    <a onclick="showPage('appointments')">Appointments</a>
-    <a onclick="showPage('referrals')">Referrals</a>
-    <a onclick="showPage('cases')">Case Records</a>
-    <a onclick="showPage('reports')">Reports</a>
-    <a onclick="showPage('settings')">Settings</a>
+   <a data-page="dashboard" onclick="showPage('dashboard')">Dashboard</a>
+<a data-page="appointments" onclick="showPage('appointments')">Appointments</a>
+<a data-page="referrals" onclick="showPage('referrals')">Referrals</a>
+<a data-page="cases" onclick="showPage('cases')">Case Records</a>
+<a data-page="reports" onclick="showPage('reports')">Reports</a>
+<a data-page="settings" onclick="showPage('settings')">Settings</a>
 </div>
 
 <div class="topbar">
@@ -364,6 +398,7 @@ Integrated Online Guidance Management System |
 
     <input type="date" id="appDate" required>
     <input type="time" id="appTime" required>
+  <!-- REMOVED for security: Guidance only generates link -->
 
     <button type="submit">Book Appointment</button>
 </form>
@@ -401,6 +436,9 @@ Integrated Online Guidance Management System |
 <td>April 22, 2026</td>
 <td><span class="status-orange">Meeting</span></td>
 <td><button class="manage-btn" onclick="manageItem('Jude Garcia')">Manage</button></td>
+<td>
+    <button onclick="generateMeetingLink(0)">Generate Video Link</button>
+</td>
 </tr>
 </table>
 
@@ -451,47 +489,66 @@ Integrated Online Guidance Management System |
 <div id="cases" class="hidden">
 <h2>Case Records</h2>
 
+   <!-- INPUTS --> 
   <h3>Student Counseling Notes</h3>
+
+<!-- TOP ROW -->
+<div class="row-top">
+
+    <div class="form-group small">
+        <label>Student Name</label>
+        <input type="text" id="caseName" placeholder="Enter student name">
+    </div>
+
+    <div class="form-group small">
+        <label>Date of Session</label>
+        <input type="date" id="noteDate">
+    </div>
+
+    <div class="form-group small">
+        <label>Counselor Name</label>
+        <input type="text" id="noteCounselor" placeholder="Enter counselor name">
+    </div>
+
+</div>
+
+<!-- BOTTOM FULL WIDTH -->
 <div class="form-group">
-    <input type="text" id="caseName" placeholder="Student Name">
+    <label>Session Summary</label>
+    <textarea id="noteSummary" placeholder="Write session summary..."></textarea>
 </div>
 
 <div class="form-group">
-    <textarea id="caseNote" placeholder="Session Notes"></textarea>
+    <label>Action Plan</label>
+    <textarea id="noteAction" placeholder="Write action plan..."></textarea>
 </div>
-<button onclick="addCase()">Save</button>
-<div class="section-box">
+  <button onclick="addSessionNote()">Save Note</button> 
+  
+<ul id="notesList"></ul>
 
-  <h3>Case Summary</h3>
+<!-- CASE SUMMARY -->
+<h3>Case Summary</h3>
 <div class="cards">
-<div class="card blue" onclick="openModal([
-'1.Daniel Santos','2.Miguel Ramos','3.Carlo Mendoza','4.Luis Navarro','5.Kevin Torres',
-'6.Adrian Cruz','7.Joshua Villanueva','8.Mark Delgado','9.Ethan Garcia','10.Noel Bautista'
-])">New Cases</div>
-
-<div class="card orange" onclick="openModal([
-'1.Rafael Lim','2.Paolo Herrera','3.Brian Castillo','4.Jose Aquino','5.Victor Salazar'
-])">Closed Cases</div>
-
-<div class="card green" onclick="openModal([
-'1.Anthony Reyes','2.Patrick Gomez','3.Jason Flores','4.Christian Vega','5.Aaron Ortiz',
-'6.Kyle Fernandez','7.Dennis Ponce','8.Gabriel Dominguez','9.Ryan Chavez','10.Leo Mercado'
-])">Follow-Up Cases</div>
-</div>
+    <div class="card blue" onclick="openModal([...])">New Cases</div>
+    <div class="card orange" onclick="openModal([...])">Closed Cases</div>
+    <div class="card green" onclick="openModal([...])">Follow-Up Cases</div>
 </div>
 
-<div class="section-box">
-<h3>Guidance Cases by Type</h3>
-<div class="bar-container">
-<div class="vbar orange" style="height:100%">Academic<br>35%</div>
-<div class="vbar bluebar" style="height:40%">Behavioral<br>5%</div>
-<div class="vbar greenbar" style="height:80%">Emotional<br>25%</div>
-<div class="vbar orange" style="height:60%">Carrer<br>15%</div>
-<div class="vbar bluebar" style="height:70%">Personal<br>20%</div>
-</div>
-</div>
+<!-- 🔥 GROUP EVERYTHING BELOW -->
+<div id="caseExtras">
 
-<div class="section-box">
+    <div class="section-box">
+        <h3>Guidance Cases by Type</h3>
+        <div class="bar-container">
+            <div class="vbar orange" style="height:100%">Academic<br>35%</div>
+            <div class="vbar bluebar" style="height:40%">Behavioral<br>5%</div>
+            <div class="vbar greenbar" style="height:80%">Emotional<br>25%</div>
+            <div class="vbar orange" style="height:60%">Career<br>15%</div>
+            <div class="vbar bluebar" style="height:70%">Personal<br>20%</div>
+        </div>
+    </div>
+
+    <div class="section-box">
 <h3>Upcoming Appointments</h3>
 <p onclick="openModal(['Angel Canino'])">Counseling – 10:00 AM - Angel Canino</p>
 <p onclick="openModal(['John Cruz'])">Follow-Up – 2:00 PM - John Cruz</p>
@@ -563,11 +620,12 @@ Integrated Online Guidance Management System |
 
     </table>
 
-</div>
-</div>
+</div> <!-- END student profile box -->
+</div> <!-- END caseExtras -->
+</div> <!-- END cases -->
 
 <!-- REPORTS -->
-<div id="reports">
+<div id="reports" class="hidden">
 
 <h2>Reports</h2>
 <hr>
@@ -634,17 +692,68 @@ Integrated Online Guidance Management System |
 <h3>👤 Account Settings</h3>
 <button>Edit Profile</button> <button>Change Password</button></div>
 <div class="settings-box">
+<div style="margin-top:10px;">
+    <input type="text" id="editName" placeholder="Enter new name">
+    <button onclick="saveProfile()">Save Name</button>
+
+    <br><br>
+
+    <input type="password" id="oldPass" placeholder="Old Password">
+    <input type="password" id="newPass" placeholder="New Password">
+    <button onclick="changePassword()">Update Password</button>
+</div>
 <h3>📅 Appointment Settings</h3>
 <button>Set Available Schedule</button> <button>Auto-Approve Appointments</button></div>
 <div class="settings-box">
+<div style="margin-top:10px;">
+    <label>Available Time:</label>
+    <input type="time" id="startTime">
+    <input type="time" id="endTime">
+    <button onclick="saveSchedule()">Save Schedule</button>
+
+    <br><br>
+
+    <label>
+        <input type="checkbox" id="autoApprove">
+        Auto-Approve Appointments
+    </label>
+</div>
 <h3>🔔 Notification Settings</h3>
 <button>Enable Email Notifications</button> <button>Enable SMS Alerts</button></div>
 <div class="settings-box">
+<div style="margin-top:10px;">
+    <label>
+        <input type="checkbox" id="emailNotif"> Email Notifications
+    </label>
+    <br>
+    <label>
+        <input type="checkbox" id="smsNotif"> SMS Alerts
+    </label>
+
+    <h4>Notification List:</h4>
+    <ul id="notifList"></ul>
+</div>
 <h3>🎨 System Preferences</h3>
 <button>Dark Mode</button> <button>Language Settings</button></div>
 <div class="settings-box">
+<div style="margin-top:10px;">
+    <label>
+        <input type="checkbox" id="darkModeToggle"> Dark Mode
+    </label>
+
+    <br><br>
+
+    <select id="languageSelect">
+        <option>English</option>
+        <option>Filipino</option>
+    </select>
+</div>
 <h3>🛡️ Security</h3>
 <button>Backup Data</button> <button onclick="logout()">Logout</button></div>
+<div style="margin-top:10px;">
+    <button onclick="exportData()">Export Backup</button>
+    <input type="file" onchange="importData(event)">
+</div>
 </div>
 </div>
 
@@ -654,7 +763,7 @@ Integrated Online Guidance Management System |
 
 <script>
 let currentRole = "";
-
+let currentUserEmail = "";
 let db = {
     appointments: JSON.parse(localStorage.getItem("appointments")) || [],
     referrals: JSON.parse(localStorage.getItem("referrals")) || [],
@@ -664,15 +773,19 @@ function login(){
     let email = document.getElementById("email").value;
     let password = document.getElementById("password").value;
 
-    if(email.endsWith("@gmail.com") && password !== ""){
+    if(email.endsWith("@gmail.com") && password !== "" && document.getElementById("role").value !== ""){
+
         currentRole = document.getElementById("role").value;
+        currentUserEmail = email;
+
+        localStorage.setItem("userRole", currentRole); // 🔥 ADD
 
         document.getElementById("loginPage").style.display = "none";
         document.getElementById("system").classList.remove("hidden");
 
-        applyAccess(); // 🔥 ADD
+        applyAccess();
     }else{
-        document.getElementById("error").innerText = "Gmail only + password required!";
+        document.getElementById("error").innerText = "Complete all fields!";
     }
 }
   
@@ -682,10 +795,27 @@ function logout(){
 }
 
 function showPage(page){
-    document.querySelectorAll('.main > div').forEach(div=>div.classList.add('hidden'));
-    document.getElementById(page).classList.remove('hidden');
-}
 
+    document.querySelectorAll('.main > div').forEach(div=>{
+        div.classList.add('hidden');
+    });
+
+    let target = document.getElementById(page);
+
+    if(!target){
+        console.warn("Page not found:", page);
+        return;
+    }
+
+    target.classList.remove('hidden');
+
+    // scroll to top (optional pero solid UX)
+    window.scrollTo(0,0);
+
+    if(page === "settings"){
+        loadNotifications();
+    }
+}
 function openModal(data){
     let content="";
     data.forEach(name=> content += "<p>"+name+"</p>");
@@ -704,29 +834,53 @@ function loadAppointments(){
     let data = JSON.parse(localStorage.getItem("appointments")) || [];
     let table = document.querySelector("#appointments table");
 
-    // remove old dynamic rows
+  // remove old dynamic rows
     table.querySelectorAll(".dynamic").forEach(e => e.remove());
 
     data.forEach((app, index) => {
-        let row = `
+
+    let statusClass = "status-blue";
+
+    if(app.status === "Approved") statusClass = "status-green";
+    if(app.status === "Completed") statusClass = "status-orange";
+    if(app.status === "Closed") statusClass = "status-green";
+
+    // 🔥 DEFINE FIRST
+    let actionButtons = "";
+
+    if(currentRole === "Guidance" || currentRole === "Admin"){
+        actionButtons = `
+            <button class="manage-btn" onclick="manageItem('${app.name}')">Manage</button>
+            <button onclick="updateStatus(${index})">Next</button>
+            <button onclick="rejectAppointment(${index})" style="background:red;color:white;border:none;border-radius:5px;">Reject</button>
+        `;
+    } else if(currentRole === "Student"){
+      if(app.status === "Approved" && app.meetingLink){
+    actionButtons = `<button onclick="joinSession('${app.meetingLink}')">Join Session</button>`;
+} else {
+          actionButtons = `<span>${app.status}</span>`;
+        }
+    } else {
+        actionButtons = `<span>-</span>`;
+    }
+
+    // 🔥 THEN USE
+    let row = `
 <tr class="dynamic">
     <td>${app.name}</td>
     <td>${app.date}</td>
-   <td><span class="status-blue">${app.status}</span></td>
-    <td>
-        <button class="manage-btn" onclick="manageItem('${app.name}')">Manage</button>
-        <button onclick="updateStatus(${index})">Next</button>
-        <button onclick="deleteAppointment(${index})" style="background:red;color:white;border:none;border-radius:5px;">Delete</button>
-    </td>
+    <td><span class="${statusClass}">${app.status}</span></td>
+    <td>${actionButtons}</td>
 </tr>`;
-        table.innerHTML += row;
-    });
+
+    table.innerHTML += row;
+});
 }
-// DELETE FUNCTION
-function deleteAppointment(index){
+// REJECT FUNCTION
+function rejectAppointment(index){
     let data = JSON.parse(localStorage.getItem("appointments")) || [];
 
-    if(confirm("Delete this appointment?")){
+    if(confirm("Reject this appointment?")){
         data.splice(index, 1);
         localStorage.setItem("appointments", JSON.stringify(data));
         loadAppointments();
@@ -737,18 +891,20 @@ function deleteAppointment(index){
 window.addEventListener("load", function(){
 
     loadAppointments();
+    displayNotes();
 
     document.getElementById("appointmentForm").addEventListener("submit", function(e){
         e.preventDefault();
 
         let appointment = {
-    name: document.getElementById("appName").value,
-    email: document.getElementById("appEmail").value,
-    service: document.getElementById("appService").value,
-    date: document.getElementById("appDate").value,
-    time: document.getElementById("appTime").value,
-    status: "Pending" // 🔥 ADD
-};
+            name: document.getElementById("appName").value,
+            email: document.getElementById("appEmail").value,
+            service: document.getElementById("appService").value,
+            date: document.getElementById("appDate").value,
+            time: document.getElementById("appTime").value,
+            meetingLink: "",
+            status: "Pending"
+        };
 
         let data = JSON.parse(localStorage.getItem("appointments")) || [];
         data.push(appointment);
@@ -761,60 +917,31 @@ window.addEventListener("load", function(){
 
         loadAppointments();
     });
+
 });
-  function applyAccess(){
-    
-    // tanggalin lahat ng hidden muna
-    document.querySelectorAll('.main > div').forEach(div=>{
-        div.classList.add('hidden');
-    });
+function applyAccess(){
 
-    // dashboard always visible first
-    document.getElementById("dashboard").classList.remove("hidden");
+    let role = localStorage.getItem("userRole");
 
-    // role-based access (ALLOW lang, hindi force hide)
-    if(currentRole === "Student"){
-        // Student can access appointments
-    }
-
-    if(currentRole === "Faculty"){
-        // Faculty can access referrals
-    }
-
-    if(currentRole === "Guidance"){
-        // Guidance can access all
-    }
-
-    if(currentRole === "Admin"){
-        // Admin settings only
-    }
-}
-  function updateStatus(index){
-    let data = JSON.parse(localStorage.getItem("appointments")) || [];
-
-    let flow = ["Pending","Approved","Completed","Closed"];
-    let current = flow.indexOf(data[index].status);
-
-    if(current < flow.length - 1){
-        data[index].status = flow[current + 1];
-    }
-
-    localStorage.setItem("appointments", JSON.stringify(data));
-    loadAppointments();
-}
-  function addReferral(){
-    let referral = {
-        name: document.getElementById("refStudent").value,
-        note: document.getElementById("refNote").value,
-        status: "Submitted"
+    const roles = {
+        Student: ["dashboard","appointments","settings"],
+        Faculty: ["dashboard","referrals","settings"],
+        Guidance: ["dashboard","appointments","referrals","cases","reports","settings"],
+        Admin: ["dashboard","appointments","referrals","cases","reports","settings"]
     };
 
-    let data = JSON.parse(localStorage.getItem("referrals")) || [];
-    data.push(referral);
+    // show allowed menus
+    let allowed = roles[role] || [];
 
-    localStorage.setItem("referrals", JSON.stringify(data));
+    document.querySelectorAll(".sidebar a").forEach(link=>{
+        let page = link.getAttribute("data-page");
 
-    alert("Referral submitted");
+        if(allowed.includes(page)){
+            link.style.display = "block";
+        }
+    });
+
+    showPage("dashboard");
 }
  function addCase(){
     let name = document.getElementById("caseName").value;
@@ -827,10 +954,12 @@ window.addEventListener("load", function(){
     }
 
     let caseData = {
-        name: name,
-        note: note
-    };
-
+    name: name,
+    note: note,
+    status: document.getElementById("caseStatus").value, // ✅ ADD
+    type: document.getElementById("caseType").value,     // ✅ ADD
+    priority: document.getElementById("casePriority").value // ✅ ADD
+};
     let data = JSON.parse(localStorage.getItem("cases")) || [];
     data.push(caseData);
 
@@ -851,12 +980,13 @@ function addReferral(){
         return;
     }
 
-    let referral = {
-        name: name,
-        note: note,
-        status: "Submitted"
-    };
-
+let referral = {
+    name: name,
+    note: note,
+    status: "Submitted",
+    createdBy: currentUserEmail // 🔥 ADD
+};
+  
     let data = JSON.parse(localStorage.getItem("referrals")) || [];
     data.push(referral);
 
@@ -867,4 +997,207 @@ function addReferral(){
     document.getElementById("refStudent").value = "";
     document.getElementById("refNote").value = "";
 }
-   
+  function joinSession(link){
+    if(link){
+        window.open(link, "_blank");
+    } else {
+        alert("No meeting link available");
+    }
+}
+  function getData(key){
+    return JSON.parse(localStorage.getItem(key)) || [];
+}
+
+function setData(key, data){
+    localStorage.setItem(key, JSON.stringify(data));
+}
+  function saveProfile(){
+    let name = document.getElementById("editName").value;
+    localStorage.setItem("userName", name);
+    alert("Profile updated");
+}
+
+function changePassword(){
+    let oldPass = document.getElementById("oldPass").value;
+    let newPass = document.getElementById("newPass").value;
+
+    let stored = localStorage.getItem("password");
+
+    if(oldPass !== stored){
+        alert("Incorrect old password");
+        return;
+    }
+
+    localStorage.setItem("password", newPass);
+    alert("Password changed");
+}
+function saveSchedule(){
+    let start = document.getElementById("startTime").value;
+    let end = document.getElementById("endTime").value;
+
+    localStorage.setItem("schedule", JSON.stringify({start, end}));
+    alert("Schedule saved");
+}
+function addNotification(message){
+    let notif = getData("notifications");
+    notif.push({
+        text: message,
+        date: new Date().toLocaleString()
+    });
+    setData("notifications", notif);
+}
+
+function loadNotifications(){
+    let list = document.getElementById("notifList");
+    if(!list) return;
+
+    let notif = getData("notifications");
+    list.innerHTML = "";
+
+    notif.forEach(n=>{
+        let li = document.createElement("li");
+        li.innerText = n.text + " (" + n.date + ")";
+        list.appendChild(li);
+    });
+}
+document.getElementById("darkModeToggle")?.addEventListener("change", function(){
+    if(this.checked){
+        document.body.style.background = "#1e1e1e";
+        document.body.style.color = "#fff";
+    } else {
+        document.body.style.background = "";
+        document.body.style.color = "";
+    }
+});
+function exportData(){
+    let allData = {
+        appointments: getData("appointments"),
+        notes: getData("notes"),
+        notifications: getData("notifications")
+    };
+
+    let blob = new Blob([JSON.stringify(allData)], {type:"application/json"});
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "backup.json";
+    a.click();
+}
+
+function importData(event){
+    let file = event.target.files[0];
+    let reader = new FileReader();
+
+    reader.onload = function(e){
+        let data = JSON.parse(e.target.result);
+
+        setData("appointments", data.appointments || []);
+        setData("notes", data.notes || []);
+        setData("notifications", data.notifications || []);
+
+        alert("Data imported successfully");
+    };
+
+    reader.readAsText(file);
+}
+function addSessionNote(){
+    let notes = getData("notes");
+
+    let note = {
+        date: document.getElementById("noteDate").value,
+        counselor: document.getElementById("noteCounselor").value,
+        summary: document.getElementById("noteSummary").value,
+        action: document.getElementById("noteAction").value
+    };
+
+    notes.push(note);
+    setData("notes", notes);
+
+    alert("Note added");
+    displayNotes();
+}
+
+function displayNotes(){
+    let list = document.getElementById("notesList");
+    if(!list) return;
+
+    let notes = getData("notes");
+    list.innerHTML = "";
+
+    notes.forEach(n=>{
+        let li = document.createElement("li");
+        li.innerHTML = `
+            <b>${n.date}</b> - ${n.counselor}<br>
+            ${n.summary}<br>
+            <i>${n.action}</i>
+        `;
+        list.appendChild(li);
+    });
+}
+ function controlUI(role){
+
+    // reset pages
+    document.querySelectorAll(".main > div").forEach(div=>{
+        div.classList.add("hidden");
+    });
+
+    document.getElementById("dashboard").classList.remove("hidden");
+
+    // reset sidebar visibility
+    document.querySelectorAll(".sidebar a").forEach(link=>{
+        link.style.display = "none";
+    });
+
+    const roles = {
+        Student: ["dashboard","appointments","settings"],
+        Faculty: ["dashboard","referrals","settings"],
+        Guidance: ["dashboard","appointments","referrals","cases","reports","settings"],
+        Admin: ["dashboard","appointments","referrals","cases","reports","settings"]
+    };
+
+    showMenu(roles[role] || []);
+}
+function generateMeetingLink(index){
+
+    let role = localStorage.getItem("userRole");
+
+    if(role !== "Guidance" && role !== "Admin"){
+        alert("Only Guidance can generate meeting links");
+        return;
+    }
+
+    let link = "https://meet.google.com/" + Math.random().toString(36).substring(2, 10);
+
+    let data = JSON.parse(localStorage.getItem("appointments")) || [];
+
+    if(data[index]){
+        data[index].meetingLink = link;
+        data[index].status = "Approved"; // auto approve
+
+        localStorage.setItem("appointments", JSON.stringify(data));
+
+        alert("Meeting link generated:\n" + link);
+
+        loadAppointments();
+    }
+}
+  function hideElement(id){
+    let el = document.getElementById(id);
+    if(el){
+        el.classList.add("hidden");
+    }
+}
+  function showMenu(pages){
+    document.querySelectorAll(".sidebar a").forEach(link=>{
+        let page = link.getAttribute("data-page");
+
+        if(pages.includes(page)){
+            link.style.display = "block";
+        } else {
+            link.style.display = "none";
+        }
+    });
+}
+  
+</script>
+</body>
+</html>
